@@ -18,8 +18,6 @@ objects:
   spec:
     lookupPolicy:
       local: false
-apiVersion: v1
-items:
 - apiVersion: build.openshift.io/v1
   kind: BuildConfig
   metadata:
@@ -209,7 +207,6 @@ items:
       app: quotesapi
     name: quotesapi
   spec:
-    clusterIP: 172.30.97.167
     ports:
     - name: 8080-tcp
       port: 8080
@@ -230,7 +227,6 @@ items:
       app: quotesdb
     name: quotesdb
   spec:
-    clusterIP: 172.30.204.21
     ports:
     - name: 3306-tcp
       port: 3306
@@ -268,6 +264,7 @@ parameters:
 - name: APP_GIT_URL
   displayName: Application Source Git URL
   required: true
+  value: https://github.com/atkaushik/DO288-apps
 - name: PASSWORD
   displayName: Database Password
   description: Password toacccess the database

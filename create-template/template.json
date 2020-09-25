@@ -1,0 +1,306 @@
+{
+    "kind": "List",
+    "apiVersion": "v1",
+    "metadata": {},
+    "items": [
+        {
+            "apiVersion": "image.openshift.io/v1",
+            "kind": "ImageStream",
+            "metadata": {
+                "annotations": null,
+                "labels": {
+                    "app": "quotesapi"
+                },
+                "name": "quotesapi"
+            },
+            "spec": {
+                "lookupPolicy": {
+                    "local": false
+                }
+            }
+        },
+        {
+            "apiVersion": "build.openshift.io/v1",
+            "kind": "BuildConfig",
+            "metadata": {
+                "labels": {
+                    "app": "quotesapi"
+                },
+                "name": "quotesapi"
+            },
+            "spec": {
+                "failedBuildsHistoryLimit": 5,
+                "nodeSelector": null,
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "quotesapi:latest"
+                    }
+                },
+                "postCommit": {},
+                "resources": {},
+                "runPolicy": "Serial",
+                "source": {
+                    "contextDir": "quotes",
+                    "git": {
+                        "uri": "https://github.com/atkaushik/DO288-apps"
+                    },
+                    "type": "Git"
+                },
+                "strategy": {
+                    "sourceStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "php:7.2",
+                            "namespace": "openshift"
+                        }
+                    },
+                    "type": "Source"
+                },
+                "successfulBuildsHistoryLimit": 5,
+                "triggers": [
+                    {
+                        "github": {
+                            "secret": "3a6wDsHD30jVjdKwN7jU1Xb1M3ypAvV37mBomXcT"
+                        },
+                        "type": "GitHub"
+                    },
+                    {
+                        "generic": {
+                            "secret": "3a6wDsHD30jVjdKwN7jU1Xb1M3ypAvV37mBomXcT"
+                        },
+                        "type": "Generic"
+                    },
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChange": {
+                            "lastTriggeredImageID": "image-registry.openshift-image-registry.svc:5000/openshift/php@sha256:feb82582395558abc7823cff3800753aaa7bf976c5a4869bc921dd53e7eef447"
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "apps.openshift.io/v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "labels": {
+                    "app": "quotesapi"
+                },
+                "managedFields": null,
+                "name": "quotesapi"
+            },
+            "spec": {
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "selector": {
+                    "deploymentconfig": "quotesapi"
+                },
+                "strategy": {
+                    "activeDeadlineSeconds": 21600,
+                    "resources": {},
+                    "rollingParams": {
+                        "intervalSeconds": 1,
+                        "maxSurge": "25%",
+                        "maxUnavailable": "25%",
+                        "timeoutSeconds": 600,
+                        "updatePeriodSeconds": 1
+                    },
+                    "type": "Rolling"
+                },
+                "template": {
+                    "metadata": {
+                        "annotations": {
+                            "openshift.io/generated-by": "OpenShiftNewApp"
+                        },
+                        "creationTimestamp": null,
+                        "labels": {
+                            "deploymentconfig": "quotesapi"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "DATABASE_NAME",
+                                        "value": "quotesdb"
+                                    },
+                                    {
+                                        "name": "DATABASE_PASSWORD",
+                                        "value": "TYvPxtqHOKUCPQt0"
+                                    },
+                                    {
+                                        "name": "DATABASE_SERVICE_NAME",
+                                        "value": "quotesdb"
+                                    },
+                                    {
+                                        "name": "DATABASE_USER",
+                                        "value": "quoteapp"
+                                    }
+                                ],
+                                "image": "image-registry.openshift-image-registry.svc:5000/amitkaushik-in-ibm-com-quotes-dev/quotesapi@sha256:2ef084d9fa3631cb3230f229a2c09726e6c9b774f02a4015472f3ab73868f57c",
+                                "imagePullPolicy": "Always",
+                                "name": "quotesapi",
+                                "ports": [
+                                    {
+                                        "containerPort": 8443,
+                                        "protocol": "TCP"
+                                    },
+                                    {
+                                        "containerPort": 8080,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File"
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30
+                    }
+                },
+                "test": false,
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "quotesapi"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "quotesapi:latest",
+                                "namespace": "amitkaushik-in-ibm-com-quotes-dev"
+                            },
+                            "lastTriggeredImage": "image-registry.openshift-image-registry.svc:5000/amitkaushik-in-ibm-com-quotes-dev/quotesapi@sha256:2ef084d9fa3631cb3230f229a2c09726e6c9b774f02a4015472f3ab73868f57c"
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "apps.openshift.io/v1",
+            "kind": "DeploymentConfig",
+            "metadata": {
+                "labels": {
+                    "app": "quotesdb"
+                },
+                "name": "quotesdb"
+            },
+            "spec": {
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "selector": {
+                    "deploymentconfig": "quotesdb"
+                },
+                "strategy": {
+                    "activeDeadlineSeconds": 21600,
+                    "resources": {},
+                    "rollingParams": {
+                        "intervalSeconds": 1,
+                        "maxSurge": "25%",
+                        "maxUnavailable": "25%",
+                        "timeoutSeconds": 600,
+                        "updatePeriodSeconds": 1
+                    },
+                    "type": "Rolling"
+                },
+                "template": {
+                    "metadata": {
+                        "annotations": {
+                            "openshift.io/generated-by": "OpenShiftNewApp"
+                        },
+                        "creationTimestamp": null,
+                        "labels": {
+                            "deploymentconfig": "quotesdb"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "env": [
+                                    {
+                                        "name": "MYSQL_DATABASE",
+                                        "value": "quotesdb"
+                                    },
+                                    {
+                                        "name": "MYSQL_PASSWORD",
+                                        "value": "TYvPxtqHOKUCPQt0"
+                                    },
+                                    {
+                                        "name": "MYSQL_USER",
+                                        "value": "quoteapp"
+                                    }
+                                ],
+                                "image": "image-registry.openshift-image-registry.svc:5000/openshift/mysql@sha256:9a781abe7581cc141e14a7e404ec34125b3e89c008b14f4e7b41e094fd3049fe",
+                                "imagePullPolicy": "IfNotPresent",
+                                "name": "quotesdb",
+                                "ports": [
+                                    {
+                                        "containerPort": 3306,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "terminationMessagePolicy": "File",
+                                "volumeMounts": [
+                                    {
+                                        "mountPath": "/var/lib/mysql/data",
+                                        "name": "quotesdb-volume-1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "dnsPolicy": "ClusterFirst",
+                        "restartPolicy": "Always",
+                        "schedulerName": "default-scheduler",
+                        "securityContext": {},
+                        "terminationGracePeriodSeconds": 30,
+                        "volumes": [
+                            {
+                                "name": "quotesdb-volume-1",
+                                "persistentVolumeClaim": {
+                                    "claimName": "quotesdb-claim"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "test": false,
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "quotesdb"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "mysql:5.7",
+                                "namespace": "openshift"
+                            },
+                            "lastTriggeredImage": "image-registry.openshift-image-registry.svc:5000/openshift/mysql@sha256:9a781abe7581cc141e14a7e404ec34125b3e89c008b14f4e7b41e094fd3049fe"
+                        },
+                        "type": "ImageChange"
+                    }
+                ]
+            }
+        }
+    ]
+}
